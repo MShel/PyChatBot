@@ -1,2 +1,2 @@
-# fb-jira-py-bot
-facebook bot in python written to pull your tasks for jira and other stuff
+# pyChatBot
+https://trello.com/b/1v4eE530/pychatbot
