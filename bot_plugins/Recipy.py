@@ -1,9 +1,8 @@
 import requests
-import json
 import urllib
 
-class Recipy:
 
+class Recipy:
     welcome_message = 'Type where and when now \n'
 
     storage = None
@@ -15,7 +14,8 @@ class Recipy:
         self.sender_id = sender_id
 
     def get_help_message(self):
-        return 'Type Ex. Ingredients:meat,egg,potatos and get list of links in response'
+        return 'Type comma separated ingredients(meat,egg,potatos)\n' \
+               'and get list of links in response'
 
     def get_response(self, message):
         url = 'http://www.recipepuppy.com/api/?i=' + urllib.quote(message) + '&p=1'
@@ -29,7 +29,7 @@ class Recipy:
             result += '\n'
             result += result_recipe['title'].encode('utf-8') + ' - '
             result += result_recipe['href']
-            i+=1
-            if i>3:
+            i += 1
+            if i > 3:
                 break
         return result

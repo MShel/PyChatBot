@@ -1,10 +1,8 @@
 import sys
 import json
-import urllib
 import requests
 from Router import Router
 from flask import Flask, request
-from pprint import pprint
 
 app = Flask(__name__)
 facebook_token = ''
@@ -51,14 +49,17 @@ def webhook():
 
 def get_reply_message(sender_id, user_message):
     router = Router()
-    plugin, initiated = router.get_plugin(user_message["message"]["text"].lower(), sender_id)
+    message = user_message["message"]["text"].lower()
+    plugin, initiated = router.get_plugin(message, sender_id)
     if plugin:
         if not initiated:
             reply = plugin.get_help_message()
         else:
-            reply = plugin.get_response(user_message["message"]["text"].lower())
+            reply = plugin.get_response(message)
+    elif message == 'exit':
+        reply = 'See you later!'
     else:
-        reply = 'Try one of those: ' + '\n'.join(router.get_available_plugins())
+        reply = 'Try one of those:\n ' + '\n'.join(router.get_available_plugins())
 
     print(reply)
     return reply
