@@ -14,7 +14,8 @@ class Recipy:
         self.sender_id = sender_id
 
     def get_help_message(self):
-        return 'Type Ex. Ingredients:meat,egg,potatos and get list of links in response'
+        return 'Type comma separated ingredients(meat,egg,potatos)\n' \
+               'and get list of links in response'
 
     def get_response(self, message):
         url = 'http://www.recipepuppy.com/api/?i=' + urllib.quote(message) + '&p=1'

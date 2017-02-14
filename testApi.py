@@ -30,5 +30,6 @@ def get_reply_message(user_message):
 
 
 test = Router()
-recipe, new = test.get_plugin('recipe', '11')
-print(recipe.get_response('beaf,egg'))
+weather, new = test.get_plugin('weather', '22')
+print(weather.get_response('cambridge MA | now'))
+#print(recipe.get_response('weather at cambridge'))

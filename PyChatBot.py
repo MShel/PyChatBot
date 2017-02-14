@@ -59,7 +59,7 @@ def get_reply_message(sender_id, user_message):
     elif message == 'exit':
         reply = 'See you later!'
     else:
-        reply = 'Try one of those: ' + '\n'.join(router.get_available_plugins())
+        reply = 'Try one of those:\n ' + '\n'.join(router.get_available_plugins())
 
     print(reply)
     return reply
