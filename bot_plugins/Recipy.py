@@ -1,9 +1,8 @@
 import requests
-import json
 import urllib
 
-class Recipy:
 
+class Recipy:
     welcome_message = 'Type where and when now \n'
 
     storage = None
@@ -29,7 +28,7 @@ class Recipy:
             result += '\n'
             result += result_recipe['title'].encode('utf-8') + ' - '
             result += result_recipe['href']
-            i+=1
-            if i>3:
+            i += 1
+            if i > 3:
                 break
         return result
