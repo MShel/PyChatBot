@@ -32,11 +32,15 @@ class Recipe(AbstractPlugin.AbstractPlugin):
             if not request_result.json()['results']:
                 raise ValueError('Noting found')
             for result_recipe in request_result.json()['results']:
+                prev_message = formatted_output
                 if len(formatted_output) < AbstractPlugin.AbstractPlugin.MESSAGE_MAX_TEXT_LEN:
                     formatted_output += result_recipe['title'].encode('utf-8') + ' - '
                     formatted_output += result_recipe['href']
                     formatted_output += '\n'
                 else:
+                    break
+                if formatted_output > AbstractPlugin.AbstractPlugin.MESSAGE_MAX_TEXT_LEN:
+                    formatted_output = prev_message
                     break
         except Exception:
             formatted_output += 'Nothing found for your ingredients :( Please try something else'
