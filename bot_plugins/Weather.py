@@ -29,23 +29,26 @@ class Weather(AbstractPlugin.AbstractPlugin):
         return result
 
     def format_output(self, request_result, when):
-        json_res = request_result.json()['query']['results']['channel']['item']['forecast']
-        i = 0
-        template = 'description: {text} \n' \
-                   'high temp: {high} \n' \
-                   'low temp: {low} \n'
+        try:
+            json_res = request_result.json()['query']['results']['channel']['item']['forecast']
+            i = 0
+            template = 'description: {text} \n' \
+                       'high temp: {high} \n' \
+                       'low temp: {low} \n'
 
-        for forecast_item in json_res:
-            if when.strip() == 'now' and i == 0:
-                formatted_output = template.format(**forecast_item)
-                break
-            elif when.strip() == 'tomorrow' and i == 1:
-                formatted_output = template.format(**forecast_item)
-                break
-            elif when.strip() == 'day after tomorrow' and i == 2:
-                formatted_output = template.format(**forecast_item)
-                break
-            i += 1
+            for forecast_item in json_res:
+                if when.strip() == 'now' and i == 0:
+                    formatted_output = template.format(**forecast_item)
+                    break
+                elif when.strip() == 'tomorrow' and i == 1:
+                    formatted_output = template.format(**forecast_item)
+                    break
+                elif when.strip() == 'day after tomorrow' and i == 2:
+                    formatted_output = template.format(**forecast_item)
+                    break
+                i += 1
+        except Exception:
+            formatted_output = 'No weather found for your location'
         return formatted_output
 
     def validate_message(self, message):
