@@ -29,6 +29,7 @@ class Weather(AbstractPlugin.AbstractPlugin):
         return result
 
     def format_output(self, request_result, when):
+        formatted_output = ''
         try:
             json_res = request_result.json()['query']['results']['channel']['item']['forecast']
             i = 0
