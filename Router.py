@@ -1,5 +1,5 @@
-from bot_plugins import YahooWeather
-from bot_plugins import Recipy
+from bot_plugins import Weather
+from bot_plugins import Recipe
 from storage import Redis
 
 
@@ -19,9 +19,9 @@ class Router:
         initiated = False
         plugin = None
         if plugin_type == 'weather':
-            plugin = YahooWeather.Weather(self.storage, sender_id)
+            plugin = Weather.Weather(self.storage, sender_id)
         elif plugin_type == 'recipe':
-            plugin = Recipy.Recipy(self.storage, sender_id)
+            plugin = Recipe.Recipe(self.storage, sender_id)
         elif plugin_type == 'exit':
             self.storage.delete(self.get_redis_key(sender_id))
         if not plugin and plugin_type != 'exit':
