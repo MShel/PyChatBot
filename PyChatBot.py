@@ -4,7 +4,7 @@ import requests
 from Router import Router
 from flask import Flask, request
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path = '/static')
 facebook_token = ''
 page_token = ''
 
@@ -17,6 +17,10 @@ def verify():
         return request.args["hub.challenge"], 200
 
     return "SmartPython sais HI!", 200
+
+@app.route('/privacy', methods=['GET'])
+def privacy():
+    return app.send_static_file('privacy.html')
 
 
 @app.route('/', methods=['POST'])

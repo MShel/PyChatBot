@@ -22,7 +22,10 @@ class Recipy:
         request_recipe = requests.get('http://www.recipepuppy.com/api/?i=' + urllib.quote(message) + '&p=1')
         result = ''
         try:
-       	    i = 0
+            print(request_recipe.json())
+            i = 0
+            if not request_recipe.json()['results']:
+                raise ValueError('Noting found')
             for result_recipe in request_recipe.json()['results']:
                 result += '\n'
                 result += result_recipe['title'].encode('utf-8') + ' - '
@@ -31,5 +34,5 @@ class Recipy:
                 if i > 3:
                     break
         except Exception:
-	          result += 'Nothing found your ingredients :( Please try something else' 
+            result += 'Nothing found for your ingredients :( Please try something else' 
         return result
