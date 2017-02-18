@@ -22,7 +22,9 @@ class Router:
             plugin = YahooWeather.Weather(self.storage, sender_id)
         elif plugin_type == 'recipe':
             plugin = Recipy.Recipy(self.storage, sender_id)
-        if not plugin:
+        elif plugin_type == 'exit':
+            self.storage.delete(self.get_redis_key(sender_id))
+        if not plugin and plugin_type != 'exit':
             plugin_type = self.storage.get(self.get_redis_key(sender_id))
             if plugin_type:
                 initiated = True

@@ -24,8 +24,10 @@ class Recipy:
         print(request_recipe)
         result = ''
         try:
-       	    print(request_recipe.json())
+            print(request_recipe.json())
             i = 0
+            if not request_recipe.json()['results']:
+                raise ValueError('Noting found')
             for result_recipe in request_recipe.json()['results']:
                 result += '\n'
                 result += result_recipe['title'].encode('utf-8') + ' - '
@@ -34,5 +36,5 @@ class Recipy:
                 if i > 3:
                     break
         except Exception:
-	    result += 'Nothing found your ingredients :( Please try something else' 
+            result += 'Nothing found for your ingredients :( Please try something else' 
         return result
