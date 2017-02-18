@@ -33,12 +33,11 @@ class Recipe(AbstractPlugin.AbstractPlugin):
                 raise ValueError('Noting found')
             i = 0
             for result_recipe in request_result.json()['results']:
-                prev_message = formatted_output
-                if len(formatted_output) < AbstractPlugin.AbstractPlugin.MESSAGE_MAX_TEXT_LEN:
+                if i < 3:
                     formatted_output += result_recipe['title'].encode('utf-8') + ' - '
                     formatted_output += result_recipe['href']
                     formatted_output += '\n'
-                elif (i > 5):
+                else:
                     break
                 i += 1
         except Exception:
