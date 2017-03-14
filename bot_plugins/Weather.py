@@ -29,6 +29,7 @@ class Weather(AbstractPlugin.AbstractPlugin):
         return result
 
     def format_output(self, request_result, when):
+        formatted_output = ''
         try:
             json_res = request_result.json()['query']['results']['channel']['item']['forecast']
             i = 0
@@ -46,6 +47,8 @@ class Weather(AbstractPlugin.AbstractPlugin):
                 elif when.strip() == 'day after tomorrow' and i == 2:
                     formatted_output = template.format(**forecast_item)
                     break
+                else:
+                    formatted_output = self.get_help_message()
                 i += 1
         except Exception:
             formatted_output = 'No weather found for your location'
