@@ -1,12 +1,11 @@
 import sys
 import json
 import requests
-from Router import Router
 from flask import Flask, request
-
-app = Flask(__name__, static_url_path = '/static')
-facebook_token = ''
-page_token = ''
+import os
+app = Flask(__name__, static_url_path='/static')
+facebook_token = os.getenv('facebook_token')
+page_token = os.getenv('page_token')
 
 
 @app.route('/', methods=['GET'])
@@ -18,6 +17,7 @@ def verify():
 
     return "SmartPython sais HI!", 200
 
+
 @app.route('/privacy', methods=['GET'])
 def privacy():
     return app.send_static_file('privacy.html')
@@ -28,8 +28,6 @@ def webhook():
     # endpoint for processing incoming messaging events
 
     data = request.get_json()
-    log(data)  # you may not want to log every incoming message in production, but it's good for testing
-
     if data["object"] == "page":
 
         for entry in data["entry"]:
@@ -52,20 +50,21 @@ def webhook():
 
 
 def get_reply_message(sender_id, user_message):
+    from Router import Router
     router = Router()
-    message = user_message["message"]["text"].lower()
-    plugin, initiated = router.get_plugin(message, sender_id)
-    if plugin:
-        if not initiated:
-            reply = plugin.get_help_message()
-        else:
-            reply = plugin.get_response(message)
-    elif message == 'exit':
-        reply = 'See you later!'
-    else:
-        reply = 'Try one of those:\n ' + '\n'.join(router.get_available_plugins())
-
-    print(reply)
+    reply = 'Try one of those:\n ' + '\n'.join(router.get_available_plugins())
+    try:
+        message = user_message["message"]["text"].lower()
+        plugin, initiated = router.get_plugin(message, sender_id)
+        if plugin:
+            if not initiated:
+                reply = plugin.get_help_message()
+            else:
+                reply = plugin.get_response(message)
+        elif message == 'exit':
+            reply = 'See you later!'
+    except KeyError:
+        log(user_message)
     return reply
 
 
