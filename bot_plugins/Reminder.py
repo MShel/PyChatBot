@@ -17,8 +17,8 @@ class Reminder(AbstractPlugin.AbstractPlugin):
                'Ex. 3600 | call mom'
 
     def get_response(self, message):
-        countdown, what_to_remind = message.split('|')
         if self.validate_message(message):
+            countdown, what_to_remind = message.split('|')
             Celery.task_to_background.apply_async(args=[self.sender_id, what_to_remind], countdown=int(countdown))
             result = 'Message scheduled'
         else:
@@ -29,4 +29,7 @@ class Reminder(AbstractPlugin.AbstractPlugin):
         pass
 
     def validate_message(self, message):
-        return True
+        result = True
+        if "|" not in message:
+            result = False
+        return result
