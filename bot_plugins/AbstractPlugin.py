@@ -15,7 +15,7 @@ class AbstractPlugin:
 
 
     @abstractmethod
-    def get_response(self): pass
+    def get_response(self, message): pass
 
 
     @abstractmethod

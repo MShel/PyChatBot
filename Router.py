@@ -1,5 +1,7 @@
 from bot_plugins import Weather
 from bot_plugins import Recipe
+from bot_plugins import Reminder
+from bot_plugins import Fortune
 from storage import Redis
 
 
@@ -22,6 +24,10 @@ class Router:
             plugin = Weather.Weather(self.storage, sender_id)
         elif plugin_type == 'recipe':
             plugin = Recipe.Recipe(self.storage, sender_id)
+        elif plugin_type in ['joke', 'advice', 'fortune']:
+            plugin = Fortune.Fortune(self.storage, sender_id)
+        elif plugin_type == 'reminder':
+            plugin = Reminder.Reminder(self.storage, sender_id)
         elif plugin_type == 'exit':
             self.storage.delete(self.get_redis_key(sender_id))
         if not plugin and plugin_type != 'exit':
