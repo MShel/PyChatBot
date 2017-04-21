@@ -7,7 +7,7 @@ from storage import Redis
 
 class Router:
     # key to store which plugin user is using
-    REDIS_KEY_ACTIVE_PLUGIN = 'pychatbot:active_plugin:%senderid%'
+    REDIS_KEY_ACTIVE_PLUGIN = 'pychatbot:active_plugin:%s'
 
     # how long do we have plugin activated thats ms
     PLUGIN_EXPIRATION = 60000
@@ -42,7 +42,7 @@ class Router:
         return plugin, initiated
 
     def get_redis_key(self, sender_id):
-        return self.REDIS_KEY_ACTIVE_PLUGIN.replace('%senderid%', sender_id)
+        return self.REDIS_KEY_ACTIVE_PLUGIN % str(sender_id)
 
     def get_available_plugins(self):
-        return ['recipe', 'weather']
+        return ['recipe', 'weather', 'joke', 'reminder', 'advice', 'fortune']
