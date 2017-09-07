@@ -6,14 +6,6 @@ from bot_plugins import AbstractPlugin
 class Recipe(AbstractPlugin.AbstractPlugin):
     API_URL = 'http://www.recipepuppy.com/api/?i={}&p=1'
 
-    storage = None
-
-    sender_id = None
-
-    def __init__(self, storage, sender_id):
-        self.storage = storage
-        self.sender_id = sender_id
-
     def get_help_message(self):
         return 'Type comma separated ingredients(meat,egg,potatoes)\n' \
                'and get list of links in response'

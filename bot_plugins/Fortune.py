@@ -9,14 +9,6 @@ class Fortune(AbstractPlugin.AbstractPlugin):
     #command to run to get fortune %s stays for max amount of characters that fortune should have
     FORTUNE_COMMAND = 'fortune -a -n %s'
 
-    storage = None
-
-    sender_id = None
-
-    def __init__(self, storage, sender_id):
-        self.storage = storage
-        self.sender_id = sender_id
-
     def get_help_message(self):
         return self.get_response(None)
 
