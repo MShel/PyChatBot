@@ -1,4 +1,4 @@
-# pyChatBot
+# pyChatBot [![Build Status](https://travis-ci.org/MShel/PyChatBot.svg?branch=master)](https://travis-ci.org/MShel/PyChatBot)
 https://trello.com/b/1v4eE530/pychatbot
 
 you can play with a bot here:
