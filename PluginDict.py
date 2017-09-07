@@ -1,31 +1,28 @@
-from bot_plugins import Weather
-from bot_plugins import Recipe
-from bot_plugins import Reminder
-from bot_plugins import Fortune
-from bot_plugins import Exit
-from pprint import pprint
+from bot_plugins.Weather import Weather
+from bot_plugins.Recipe import Recipe
+from bot_plugins.Reminder import Reminder
+from bot_plugins.Fortune import Fortune
+from bot_plugins.Exit import Exit
 
 #all plugins are singletones so we dont need to worry about multiply intialisation
 pluginDict = {
-    'weather': Weather.Weather(),
-    'погода': Weather.Weather(),
-    'weath': Weather.Weather(),
+    'weather': Weather(),
+    'погода': Weather(),
+    'weath': Weather(),
 
-    'recipe': Recipe.Recipe(),
-    'рецепты': Recipe.Recipe(),
-    'rcp': Recipe.Recipe(),
+    'recipe': Recipe(),
+    'рецепты': Recipe(),
+    'rcp': Recipe(),
 
-    'reminder': Reminder.Reminder(),
-    'напоминание': Reminder.Reminder(),
-    'remind': Reminder.Reminder(),
+    'reminder': Reminder(),
+    'напоминание': Reminder(),
+    'remind': Reminder(),
 
-    'шутка': Reminder.Reminder(),
-    'joke': Reminder.Reminder(),
-    'fortune': Reminder.Reminder(),
-    'sad': Fortune.Fortune(),
+    'шутка': Fortune(),
+    'joke': Fortune(),
+    'fortune': Fortune(),
+    'sad': Fortune(),
 
-    'exit': Exit.Exit(),
-    'выход': Exit.Exit()
+    'exit': Exit(),
+    'выход': Exit()
 }
-
-pprint(pluginDict)
