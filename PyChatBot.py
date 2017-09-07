@@ -3,10 +3,15 @@ import json
 import requests
 from flask import Flask, request
 import os
+from storage import Redis
+
+#TODO this whole file is bad
+
 app = Flask(__name__, static_url_path='/static')
 facebook_token = os.getenv('facebook_token')
 page_token = os.getenv('page_token')
 
+storage = Redis.RedisAdapter().get_storage()
 
 @app.route('/', methods=['GET'])
 def verify():
@@ -51,7 +56,7 @@ def webhook():
 
 def get_reply_message(sender_id, user_message):
     from Router import Router
-    router = Router()
+    router = Router(storage)
     reply = 'Try one of those:\n ' + '\n'.join(router.get_available_plugins())
     try:
         message = user_message["message"]["text"].lower()

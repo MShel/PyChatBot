@@ -1,19 +1,10 @@
 import requests
-import urllib
 import re
 from bot_plugins import AbstractPlugin
 
 
 class Weather(AbstractPlugin.AbstractPlugin):
     API_URL = 'https://query.yahooapis.com/v1/public/yql?q={}&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys'
-
-    storage = None
-
-    sender_id = None
-
-    def __init__(self, storage, sender_id):
-        self.storage = storage
-        self.sender_id = sender_id
 
     def get_help_message(self):
         return 'Type location name and time of interest(now, tomorrow, day after tomorrow) splitted by | \n' \

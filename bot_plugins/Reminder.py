@@ -3,14 +3,6 @@ from storage import Celery
 
 class Reminder(AbstractPlugin.AbstractPlugin):
 
-    storage = None
-
-    sender_id = None
-
-    def __init__(self, storage, sender_id):
-        self.storage = storage
-        self.sender_id = sender_id
-
     def get_help_message(self):
         return 'Type for how long to delay in seconds split by | with message you want to receive after delay\n' \
                'your message after delay.\n'\
