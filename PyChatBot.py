@@ -66,16 +66,12 @@ def get_reply_message(sender_id, user_message):
                 reply = plugin.get_help_message()
             else:
                 reply = plugin.get_response(message)
-        elif message == 'exit':
-            reply = 'See you later!'
     except KeyError:
         log(user_message)
     return reply
 
 
 def send_message(recipient_id, message_text):
-    log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
-
     params = {
         "access_token": page_token
     }
@@ -91,10 +87,6 @@ def send_message(recipient_id, message_text):
         }
     })
     r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
-    if r.status_code != 200:
-        log(r.status_code)
-        log(r.text)
-
 
 def log(message):  # simple wrapper for logging to stdout on heroku
     print(str(message))

@@ -7,8 +7,6 @@ and implement missing methods
 class AbstractPlugin:
     __metaclass__ = ABCMeta
 
-    MESSAGE_MAX_TEXT_LEN = 640
-
     _instance = None
 
     storage = None
