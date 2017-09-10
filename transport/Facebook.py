@@ -4,8 +4,8 @@ from flask import Flask, request
 from Router import Router
 import json
 
-
 class Facebook(AbstractTransport):
+
     verify_token = None
 
     access_token = None
@@ -21,23 +21,36 @@ class Facebook(AbstractTransport):
         self.init_app()
 
     def init_app(self):
-        self.app.add_url_rule('/', self.access_point_root, self.webhook, methods=['POST'])
-        self.app.add_url_rule('/', self.access_point_root, self.verify, methods=['GET'])
-        self.app.add_url_rule('/', self.access_point_root, self.webhook, methods=['POST'])
-        self.app.add_url_rule('/', self.access_point_root, self.webhook, methods=['POST'])
+        #self.app.add_url_rule('/', self.access_point_root, self.verify, methods=['GET'])
+        self.app.add_url_rule('/','index', lambda :'hola', methods=['GET'])
+        #self.app.add_url_rule('/', self.access_point_root, self.webhook, methods=['POST'])
 
-    def webhook(self):
+    def webhook(self) -> tuple:
         data = request.get_json()
         if data["object"] == "page":
             for entry in data["entry"]:
                 for messaging_event in entry["messaging"]:
                     if messaging_event.get("message"):
                         sender_id = messaging_event["sender"]["id"]
-                        self.send_message(sender_id, self.get_reply_message(sender_id, self.get_message_text(messaging_event)))
+                        messageGenerator = self.get_reply_message(sender_id, messaging_event["message"]["text"].lower())
+                        for message in messageGenerator:
+                            self.send_message(sender_id, message)
 
         return "ok", 200
 
-    def send_message(self, recipient_id, message_text):
+    def privacy(self):
+        print(test)
+        return self.app.send_static_file('privacy.html')
+
+    def verify(self) -> tuple:
+        if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
+            if not request.args.get("hub.verify_token") == facebook_token:
+                return "Verification token mismatch", 403
+            return request.args["hub.challenge"], 200
+
+        return "We Goy to FB transport!", 200
+
+    def send_message(self, recipient_id: int, message_text: int):
         params = {
             "access_token": self.access_token
         }
@@ -52,12 +65,4 @@ class Facebook(AbstractTransport):
                 "text": message_text
             }
         })
-        r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
-
-    def get_message_text(self, messaging_event: dict):
-        message = ''
-        try:
-            message = messaging_event["message"]["text"].lower()
-        except KeyError:
-            pass
-        return message
+        requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)

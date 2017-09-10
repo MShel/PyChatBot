@@ -34,10 +34,9 @@ class AbstractTransport:
     def send_message(self, message):
         pass
 
-    @abstractmethod
-    def get_message_text(self, message: str) -> str:
-        pass
-
+    ##
+    # returns generator over the message to repply paginated by self.max_message_size
+    ##
     def get_reply_message(self, sender_id: str, message: str) -> Generator[str, None, None]:
         reply = 'Try one of those:\n ' + '\n'.join(self.router.get_available_plugins())
         plugin, initiated = self.router.get_plugin(message, sender_id)

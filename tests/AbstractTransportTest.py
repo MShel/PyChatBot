@@ -26,5 +26,6 @@ class AbstractTransportTest(unittest.TestCase):
         for char in testResponse:
             listToAssert.append(char)
         self.assertEqual(listToAssert,['SPLIT', ' EVER', 'Y FIV', 'E WOR', 'DS'])
+
 if __name__ == '__main__':
     unittest.main()

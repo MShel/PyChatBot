@@ -1,97 +1,37 @@
 import sys
 import json
 import requests
-from flask import Flask, request
+from flask import Flask, request, url_for
 import os
 from storage import Redis
+from config.config import Config
+from Router import Router
+import importlib
 
-#TODO this whole file is bad
-
-app = Flask(__name__, static_url_path='/static')
-facebook_token = os.getenv('facebook_token')
-page_token = os.getenv('page_token')
-
+app = Flask(__name__, static_url_path=Config['static_path'])
 storage = Redis.RedisAdapter().get_storage()
+router = Router(storage)
 
-@app.route('/', methods=['GET'])
-def verify():
-    if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
-        if not request.args.get("hub.verify_token") == facebook_token:
-            return "Verification token mismatch", 403
-        return request.args["hub.challenge"], 200
-
-    return "SmartPython sais HI!", 200
+def has_no_empty_params(rule):
+    defaults = rule.defaults if rule.defaults is not None else ()
+    arguments = rule.arguments if rule.arguments is not None else ()
+    return len(defaults) >= len(arguments)
 
 
-@app.route('/privacy', methods=['GET'])
-def privacy():
-    return app.send_static_file('privacy.html')
+@app.route("/site-map")
+def site_map():
+    links = []
+    for rule in app.url_map.iter_rules():
+        # Filter out rules we can't navigate to in a browser
+        # and rules that require parameters
+        if "GET" in rule.methods and has_no_empty_params(rule):
+            url = url_for(rule.endpoint, **(rule.defaults or {}))
+            links.append((url, rule.endpoint))
 
-
-@app.route('/', methods=['POST'])
-def webhook():
-    # endpoint for processing incoming messaging events
-
-    data = request.get_json()
-    if data["object"] == "page":
-
-        for entry in data["entry"]:
-            for messaging_event in entry["messaging"]:
-
-                if messaging_event.get("message"):  # someone sent us a message
-                    sender_id = messaging_event["sender"]["id"]  # the facebook ID of the person sending you the message
-                    send_message(sender_id, get_reply_message(sender_id, messaging_event))
-
-                if messaging_event.get("delivery"):  # delivery confirmation
-                    pass
-
-                if messaging_event.get("optin"):  # optin confirmation
-                    pass
-
-                if messaging_event.get("postback"):  # user clicked/tapped "postback" button in earlier message
-                    pass
-
-    return "ok", 200
-
-
-def get_reply_message(sender_id, user_message):
-    from Router import Router
-    router = Router(storage)
-    reply = 'Try one of those:\n ' + '\n'.join(router.get_available_plugins())
-    try:
-        message = user_message["message"]["text"].lower()
-        plugin, initiated = router.get_plugin(message, sender_id)
-        if plugin:
-            if not initiated:
-                reply = plugin.get_help_message()
-            else:
-                reply = plugin.get_response(message)
-    except KeyError:
-        log(user_message)
-    return reply
-
-
-def send_message(recipient_id, message_text):
-    params = {
-        "access_token": page_token
-    }
-    headers = {
-        "Content-Type": "application/json"
-    }
-    data = json.dumps({
-        "recipient": {
-            "id": recipient_id
-        },
-        "message": {
-            "text": message_text
-        }
-    })
-    r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
-
-def log(message):  # simple wrapper for logging to stdout on heroku
-    print(str(message))
-    sys.stdout.flush()
-
+for transport_to_init in Config['transports']:
+    module = __import__('transport.'+transport_to_init)
+    transport_class = getattr(getattr(module, transport_to_init), transport_to_init)
+    transport_instance = transport_class(app,router,*(Config['transports'][transport_to_init]).values())
 
 if __name__ == '__main__':
     app.run(debug=True)
