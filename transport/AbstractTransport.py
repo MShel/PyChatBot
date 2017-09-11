@@ -14,6 +14,8 @@ class AbstractTransport:
 
     router = None
 
+    _instance = None
+
     # 100 chars as max size message
     max_message_size = 100
 

@@ -1,29 +1,40 @@
 from transport.AbstractTransport import AbstractTransport
 import requests
 from flask import Flask, request
+from flask.views import View
 from Router import Router
 import json
+from flask.ext.restful import Resource
 
-class Facebook(AbstractTransport):
-
+class Facebook(AbstractTransport, Resource):
     verify_token = None
 
-    access_token = None
+    access_token = 'test'
 
     access_point_root = None
 
-    def __init__(self, app: Flask, router: Router, access_token: str, verify_token: str, access_point_root: str):
-        self.app = app
+    methods = ['GET', 'POST']
+
+    def __init__(self, facebook):
+        self.fb = facebook
+
+
+    def init_class(self, router: Router, access_token: str, verify_token: str, access_point_root: str):
         self.access_token = access_token
         self.verify_token = verify_token
         self.access_point_root = access_point_root
         self.router = router
-        self.init_app()
+        return self
 
-    def init_app(self):
-        #self.app.add_url_rule('/', self.access_point_root, self.verify, methods=['GET'])
-        self.app.add_url_rule('/','index', lambda :'hola', methods=['GET'])
-        #self.app.add_url_rule('/', self.access_point_root, self.webhook, methods=['POST'])
+    def get(self,param=None):
+        print(self.fb)
+        print(param)
+        return self.fb.access_token
+
+    def test(self,param=None):
+        print(self.fb)
+        print(param)
+        return self.fb.access_token
 
     def webhook(self) -> tuple:
         data = request.get_json()
@@ -39,12 +50,11 @@ class Facebook(AbstractTransport):
         return "ok", 200
 
     def privacy(self):
-        print(test)
         return self.app.send_static_file('privacy.html')
 
     def verify(self) -> tuple:
         if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
-            if not request.args.get("hub.verify_token") == facebook_token:
+            if not request.args.get("hub.verify_token") == self.verify_token:
                 return "Verification token mismatch", 403
             return request.args["hub.challenge"], 200
 
