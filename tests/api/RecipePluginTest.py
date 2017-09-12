@@ -1,10 +1,6 @@
 from bot_plugins.Recipe import Recipe
 import unittest
 
-recipe_plugin = Recipe()
-response = recipe_plugin.get_response('chicken,eggs,potatos')
-print(response)
-
 class RecipePluginTest(unittest.TestCase):
 
     def test_success(self):
