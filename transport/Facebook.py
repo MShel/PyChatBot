@@ -4,37 +4,48 @@ from flask import Flask, request
 from flask.views import View
 from Router import Router
 import json
-from flask.ext.restful import Resource
+from flask_restful import Resource
 
-class Facebook(AbstractTransport, Resource):
+
+class Facebook(AbstractTransport):
     verify_token = None
 
     access_token = 'test'
 
     access_point_root = None
 
-    methods = ['GET', 'POST']
+    ENDPOINTS_TO_ADD = ["/privacy", "/webhook"]
 
-    def __init__(self, facebook):
-        self.fb = facebook
-
-
-    def init_class(self, router: Router, access_token: str, verify_token: str, access_point_root: str):
+    def __init__(self, router: Router, access_token: str, verify_token: str, access_point_root: str):
         self.access_token = access_token
         self.verify_token = verify_token
         self.access_point_root = access_point_root
         self.router = router
-        return self
 
-    def get(self,param=None):
-        print(self.fb)
-        print(param)
-        return self.fb.access_token
+    def get_end_points_to_add(self):
+        return self.ENDPOINTS_TO_ADD
 
-    def test(self,param=None):
+class FacebookEndPoint(Resource):
+
+    fb = None
+
+    app = None
+
+    methods = ['GET', 'POST']
+
+
+    def __init__(self, fb: Facebook, app: Flask):
+        self.fb = fb
+        self.app = app
+
+    def get(self):
+        print(request.path)
+        return self.app.send_static_file('privacy.html')
+
+    def test(self, param=None):
         print(self.fb)
-        print(param)
-        return self.fb.access_token
+        print(request.path)
+        return request
 
     def webhook(self) -> tuple:
         data = request.get_json()
@@ -49,8 +60,8 @@ class Facebook(AbstractTransport, Resource):
 
         return "ok", 200
 
-    def privacy(self):
-        return self.app.send_static_file('privacy.html')
+    def get_privacy(self):
+        self.app.send_static_file('privacy.html')
 
     def verify(self) -> tuple:
         if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
