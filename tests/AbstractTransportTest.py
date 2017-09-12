@@ -1,9 +1,9 @@
 import unittest
 import Router
-from pprint import pprint
 from tests.RouterTest import DummyStorage
 from mock import Mock
 from transport.AbstractTransport import AbstractTransport
+
 class Plugin:
     def get_help_message(self, *args):
         return('test')
@@ -26,5 +26,6 @@ class AbstractTransportTest(unittest.TestCase):
         for char in testResponse:
             listToAssert.append(char)
         self.assertEqual(listToAssert,['SPLIT', ' EVER', 'Y FIV', 'E WOR', 'DS'])
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,0 +1,10 @@
+{
+  "static_path": "/static",
+  "transports": {
+    "Facebook": {
+      "verify_token": "test1",
+      "access_token": "test0",
+      "access_point_root": "/fb_bot"
+    }
+  }
+}

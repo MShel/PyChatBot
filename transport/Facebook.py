@@ -1,43 +1,78 @@
 from transport.AbstractTransport import AbstractTransport
 import requests
 from flask import Flask, request
+from flask.views import View
 from Router import Router
 import json
-
+from flask_restful import Resource
+import re
 
 class Facebook(AbstractTransport):
     verify_token = None
 
-    access_token = None
+    access_token = 'test'
 
     access_point_root = None
 
-    def __init__(self, app: Flask, router: Router, access_token: str, verify_token: str, access_point_root: str):
-        self.app = app
+    ENDPOINTS_TO_ADD = ["/", "/privacy", "/webhook"]
+
+    def __init__(self, router: Router, access_token: str, verify_token: str, access_point_root: str):
         self.access_token = access_token
         self.verify_token = verify_token
         self.access_point_root = access_point_root
         self.router = router
-        self.init_app()
 
-    def init_app(self):
-        self.app.add_url_rule('/', self.access_point_root, self.webhook, methods=['POST'])
-        self.app.add_url_rule('/', self.access_point_root, self.verify, methods=['GET'])
-        self.app.add_url_rule('/', self.access_point_root, self.webhook, methods=['POST'])
-        self.app.add_url_rule('/', self.access_point_root, self.webhook, methods=['POST'])
+    def get_end_points_to_add(self):
+        return self.ENDPOINTS_TO_ADD
 
-    def webhook(self):
-        data = request.get_json()
+
+class FacebookEndPoint(Resource):
+
+    MESSAGES_URL = "https://graph.facebook.com/v2.6/me/messages"
+
+    fb = None
+
+    app = None
+
+    methods = ['GET', 'POST']
+
+    def __init__(self, fb: Facebook, app: Flask):
+        self.fb = fb
+        self.app = app
+
+    def get(self):
+        if 'privacy' in request.path:
+            return self.app.send_static_file('privacy.html')
+        return self.verify()
+
+    def post(self):
+        data = request.json()
+        return self.webhook(data)
+
+    def webhook(self, data) -> tuple:
         if data["object"] == "page":
             for entry in data["entry"]:
                 for messaging_event in entry["messaging"]:
                     if messaging_event.get("message"):
                         sender_id = messaging_event["sender"]["id"]
-                        self.send_message(sender_id, self.get_reply_message(sender_id, self.get_message_text(messaging_event)))
+                        messageGenerator = self.get_reply_message(sender_id, messaging_event["message"]["text"].lower())
+                        for message in messageGenerator:
+                            self.send_message(sender_id, message)
 
         return "ok", 200
 
-    def send_message(self, recipient_id, message_text):
+    def get_privacy(self):
+        self.app.send_static_file('privacy.html')
+
+    def verify(self) -> tuple:
+        if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
+            if not request.args.get("hub.verify_token") == self.fb.verify_token:
+                return "Verification token mismatch", 403
+            return request.args["hub.challenge"], 200
+
+        return "We Got to FB transport!", 200
+
+    def send_message(self, recipient_id: int, message_text: int):
         params = {
             "access_token": self.access_token
         }
@@ -52,12 +87,4 @@ class Facebook(AbstractTransport):
                 "text": message_text
             }
         })
-        r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
-
-    def get_message_text(self, messaging_event: dict):
-        message = ''
-        try:
-            message = messaging_event["message"]["text"].lower()
-        except KeyError:
-            pass
-        return message
+        requests.post(self.MESSAGES_URL, params=params, headers=headers, data=data)

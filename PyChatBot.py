@@ -1,97 +1,30 @@
-import sys
 import json
-import requests
-from flask import Flask, request
-import os
+from flask import Flask
 from storage import Redis
+from Router import Router
+from flask_restful import Api
+from collections import OrderedDict
 
-#TODO this whole file is bad
-
-app = Flask(__name__, static_url_path='/static')
-facebook_token = os.getenv('facebook_token')
-page_token = os.getenv('page_token')
-
+Config = json.load(open('config/config.json'), object_pairs_hook=OrderedDict)
+print(Config)
+app = Flask(__name__, static_url_path=Config['static_path'])
 storage = Redis.RedisAdapter().get_storage()
+router = Router(storage)
 
-@app.route('/', methods=['GET'])
-def verify():
-    if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
-        if not request.args.get("hub.verify_token") == facebook_token:
-            return "Verification token mismatch", 403
-        return request.args["hub.challenge"], 200
-
-    return "SmartPython sais HI!", 200
-
-
-@app.route('/privacy', methods=['GET'])
-def privacy():
-    return app.send_static_file('privacy.html')
-
-
-@app.route('/', methods=['POST'])
-def webhook():
-    # endpoint for processing incoming messaging events
-
-    data = request.get_json()
-    if data["object"] == "page":
-
-        for entry in data["entry"]:
-            for messaging_event in entry["messaging"]:
-
-                if messaging_event.get("message"):  # someone sent us a message
-                    sender_id = messaging_event["sender"]["id"]  # the facebook ID of the person sending you the message
-                    send_message(sender_id, get_reply_message(sender_id, messaging_event))
-
-                if messaging_event.get("delivery"):  # delivery confirmation
-                    pass
-
-                if messaging_event.get("optin"):  # optin confirmation
-                    pass
-
-                if messaging_event.get("postback"):  # user clicked/tapped "postback" button in earlier message
-                    pass
-
-    return "ok", 200
-
-
-def get_reply_message(sender_id, user_message):
-    from Router import Router
-    router = Router(storage)
-    reply = 'Try one of those:\n ' + '\n'.join(router.get_available_plugins())
-    try:
-        message = user_message["message"]["text"].lower()
-        plugin, initiated = router.get_plugin(message, sender_id)
-        if plugin:
-            if not initiated:
-                reply = plugin.get_help_message()
-            else:
-                reply = plugin.get_response(message)
-    except KeyError:
-        log(user_message)
-    return reply
-
-
-def send_message(recipient_id, message_text):
-    params = {
-        "access_token": page_token
-    }
-    headers = {
-        "Content-Type": "application/json"
-    }
-    data = json.dumps({
-        "recipient": {
-            "id": recipient_id
-        },
-        "message": {
-            "text": message_text
-        }
-    })
-    r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
-
-def log(message):  # simple wrapper for logging to stdout on heroku
-    print(str(message))
-    sys.stdout.flush()
-
+api = Api(app)
+#TODO we need to add some comments about this magic
+for transport_to_init in Config['transports']:
+    module = __import__('transport.' + transport_to_init)
+    transport_class = getattr(getattr(module, transport_to_init), transport_to_init)
+    transport_instance = transport_class(router, **Config['transports'][transport_to_init])
+    module = __import__('transport.' + transport_to_init)
+    end_point_name = transport_to_init + 'EndPoint'
+    api_class = getattr(getattr(module, transport_to_init), end_point_name)
+    for end_point in transport_instance.get_end_points_to_add():
+        print(transport_instance.access_point_root + end_point)
+        api.add_resource(api_class, transport_instance.access_point_root + end_point,
+                         endpoint=transport_instance.access_point_root + end_point,
+                         resource_class_kwargs={'fb': transport_instance, 'app': app})
 
 if __name__ == '__main__':
     app.run(debug=True)

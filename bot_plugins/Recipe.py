@@ -23,27 +23,18 @@ class Recipe(AbstractPlugin.AbstractPlugin):
         try:
             if not request_result.json()['results']:
                 raise ValueError('Nothing found')
-            i = 0
-            for result_recipe in request_result.json()['results']:
-                if len(formatted_output) < self.MESSAGE_MAX_TEXT_LEN:
-                    new_output = formatted_output
-                    new_output += result_recipe['title'].encode('utf-8') + ' - '
-                    new_output += result_recipe['href']
-                    new_output += '\n'
-                else:
-                    break
 
-                if len(new_output) < self.MESSAGE_MAX_TEXT_LEN:
-                    formatted_output = new_output
-                else:
-                    break
-                i += 1
+            for result_recipe in request_result.json()['results']:
+                formatted_output += result_recipe['title'] + ' - '
+                formatted_output += result_recipe['href']
+                formatted_output += '\n'
+
         except ValueError:
             formatted_output += 'Nothing found for your ingredients :( Please try something else'
         return formatted_output
 
     def build_url(self, message):
-        message = urllib.quote(message.replace(' ', ''))
+        message = urllib.parse.quote(message.replace(' ', ''))
         url = self.API_URL.format(message)
         return url
 
