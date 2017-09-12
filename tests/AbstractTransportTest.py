@@ -1,9 +1,9 @@
 import unittest
 import Router
-from pprint import pprint
 from tests.RouterTest import DummyStorage
 from mock import Mock
 from transport.AbstractTransport import AbstractTransport
+
 class Plugin:
     def get_help_message(self, *args):
         return('test')

@@ -4,7 +4,7 @@
     "Facebook": {
       "verify_token": "test1",
       "access_token": "test0",
-      "access_point": "/fb_bot"
+      "access_point_root": "/fb_bot"
     }
   }
 }

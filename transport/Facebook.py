@@ -5,7 +5,7 @@ from flask.views import View
 from Router import Router
 import json
 from flask_restful import Resource
-
+import re
 
 class Facebook(AbstractTransport):
     verify_token = None
@@ -14,7 +14,7 @@ class Facebook(AbstractTransport):
 
     access_point_root = None
 
-    ENDPOINTS_TO_ADD = ["/privacy", "/webhook"]
+    ENDPOINTS_TO_ADD = ["/", "/privacy", "/webhook"]
 
     def __init__(self, router: Router, access_token: str, verify_token: str, access_point_root: str):
         self.access_token = access_token
@@ -25,7 +25,10 @@ class Facebook(AbstractTransport):
     def get_end_points_to_add(self):
         return self.ENDPOINTS_TO_ADD
 
+
 class FacebookEndPoint(Resource):
+
+    MESSAGES_URL = "https://graph.facebook.com/v2.6/me/messages"
 
     fb = None
 
@@ -33,22 +36,20 @@ class FacebookEndPoint(Resource):
 
     methods = ['GET', 'POST']
 
-
     def __init__(self, fb: Facebook, app: Flask):
         self.fb = fb
         self.app = app
 
     def get(self):
-        print(request.path)
-        return self.app.send_static_file('privacy.html')
+        if 'privacy' in request.path:
+            return self.app.send_static_file('privacy.html')
+        return self.verify()
 
-    def test(self, param=None):
-        print(self.fb)
-        print(request.path)
-        return request
+    def post(self):
+        data = request.json()
+        return self.webhook(data)
 
-    def webhook(self) -> tuple:
-        data = request.get_json()
+    def webhook(self, data) -> tuple:
         if data["object"] == "page":
             for entry in data["entry"]:
                 for messaging_event in entry["messaging"]:
@@ -65,11 +66,11 @@ class FacebookEndPoint(Resource):
 
     def verify(self) -> tuple:
         if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
-            if not request.args.get("hub.verify_token") == self.verify_token:
+            if not request.args.get("hub.verify_token") == self.fb.verify_token:
                 return "Verification token mismatch", 403
             return request.args["hub.challenge"], 200
 
-        return "We Goy to FB transport!", 200
+        return "We Got to FB transport!", 200
 
     def send_message(self, recipient_id: int, message_text: int):
         params = {
@@ -86,4 +87,4 @@ class FacebookEndPoint(Resource):
                 "text": message_text
             }
         })
-        requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
+        requests.post(self.MESSAGES_URL, params=params, headers=headers, data=data)
