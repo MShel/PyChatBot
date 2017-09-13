@@ -23,11 +23,6 @@ class AbstractTransport:
     def get_help_message(self):
         pass
 
-    # we use this method to add nesesary method to flask app
-    @abstractmethod
-    def init_app(self, app):
-        pass
-
     @abstractmethod
     def get_response(self, message):
         pass
@@ -36,13 +31,19 @@ class AbstractTransport:
     def send_message(self, message):
         pass
 
+    @abstractmethod
+    def get_end_points_to_add(self):
+        pass
     ##
-    # returns generator over the message to repply paginated by self.max_message_size
+    # returns generator over the message to reply paginated by self.max_message_size
     ##
     def get_reply_message(self, sender_id: str, message: str) -> Generator[str, None, None]:
         reply = 'Try one of those:\n ' + '\n'.join(self.router.get_available_plugins())
         plugin, initiated = self.router.get_plugin(message, sender_id)
+
         if plugin:
+            plugin.transport = self
+
             if not initiated:
                 reply = plugin.get_help_message()
             else:

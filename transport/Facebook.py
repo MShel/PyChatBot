@@ -1,11 +1,9 @@
 from transport.AbstractTransport import AbstractTransport
 import requests
 from flask import Flask, request
-from flask.views import View
 from Router import Router
 import json
 from flask_restful import Resource
-import re
 
 class Facebook(AbstractTransport):
     verify_token = None
@@ -16,6 +14,8 @@ class Facebook(AbstractTransport):
 
     ENDPOINTS_TO_ADD = ["/", "/privacy", "/webhook"]
 
+    MESSAGES_URL = "https://graph.facebook.com/v2.6/me/messages"
+
     def __init__(self, router: Router, access_token: str, verify_token: str, access_point_root: str):
         self.access_token = access_token
         self.verify_token = verify_token
@@ -25,10 +25,24 @@ class Facebook(AbstractTransport):
     def get_end_points_to_add(self):
         return self.ENDPOINTS_TO_ADD
 
+    def send_message(self, recipient_id: int, message_text: str):
+        params = {
+            "access_token": self.access_token
+        }
+        headers = {
+            "Content-Type": "application/json"
+        }
+        data = json.dumps({
+            "recipient": {
+                "id": recipient_id
+            },
+            "message": {
+                "text": message_text
+            }
+        })
+        requests.post(self.MESSAGES_URL, params=params, headers=headers, data=data)
 
 class FacebookEndPoint(Resource):
-
-    MESSAGES_URL = "https://graph.facebook.com/v2.6/me/messages"
 
     fb = None
 
@@ -55,9 +69,9 @@ class FacebookEndPoint(Resource):
                 for messaging_event in entry["messaging"]:
                     if messaging_event.get("message"):
                         sender_id = messaging_event["sender"]["id"]
-                        messageGenerator = self.get_reply_message(sender_id, messaging_event["message"]["text"].lower())
+                        messageGenerator = self.fb.get_reply_message(sender_id, messaging_event["message"]["text"].lower())
                         for message in messageGenerator:
-                            self.send_message(sender_id, message)
+                            self.fb.send_message(sender_id, message)
 
         return "ok", 200
 
@@ -71,20 +85,3 @@ class FacebookEndPoint(Resource):
             return request.args["hub.challenge"], 200
 
         return "We Got to FB transport!", 200
-
-    def send_message(self, recipient_id: int, message_text: int):
-        params = {
-            "access_token": self.access_token
-        }
-        headers = {
-            "Content-Type": "application/json"
-        }
-        data = json.dumps({
-            "recipient": {
-                "id": recipient_id
-            },
-            "message": {
-                "text": message_text
-            }
-        })
-        requests.post(self.MESSAGES_URL, params=params, headers=headers, data=data)
