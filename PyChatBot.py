@@ -20,8 +20,8 @@ for transport_to_init in Config['transports']:
     module = __import__('transport.' + transport_to_init)
     end_point_name = transport_to_init + 'EndPoint'
     api_class = getattr(getattr(module, transport_to_init), end_point_name)
+
     for end_point in transport_instance.get_end_points_to_add():
-        print(transport_instance.access_point_root + end_point)
         api.add_resource(api_class, transport_instance.access_point_root + end_point,
                          endpoint=transport_instance.access_point_root + end_point,
                          resource_class_kwargs={'fb': transport_instance, 'app': app})

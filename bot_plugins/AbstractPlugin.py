@@ -13,6 +13,8 @@ class AbstractPlugin:
 
     sender_id = None
 
+    transport = None
+
     @abstractmethod
     def get_help_message(self): pass
 
