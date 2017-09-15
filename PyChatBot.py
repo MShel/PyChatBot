@@ -6,9 +6,8 @@ from flask_restful import Api
 from collections import OrderedDict
 
 Config = json.load(open('config/config.json'), object_pairs_hook=OrderedDict)
-print(Config)
 app = Flask(__name__, static_url_path=Config['static_path'])
-storage = Redis.RedisAdapter().get_storage()
+storage = Redis.RedisAdapter(Config['redis_host'],Config['redis_port']).get_storage()
 router = Router(storage)
 
 api = Api(app)
