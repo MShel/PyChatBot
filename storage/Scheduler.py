@@ -1,28 +1,28 @@
 from celery import Celery
-from storage.Redis import RedisAdapter
 from celery import Task
 from transport import AbstractTransport
 
 
-class Scheduler:
+class Scheduler(object):
     _instance = None
 
     QUEUE_NAME = 'bot_reminder'
 
-    def __init__(self):
+    __initialized = None
+
+    def __init__(self, host=None, port=None):
         self.celery = Celery(self.QUEUE_NAME,
-                             broker='redis://' + RedisAdapter.host + ':' + str(RedisAdapter.port) + '/0')
+                             broker='redis://' + str(host) + ':' + str(port) + '/0')
 
     def add_delayed_message(self, delayFor: int, transport: AbstractTransport, message: str):
         task = TaskToSchedue()
         task.delay(delayFor, transport, message)
 
-    # singleton
     def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super().__new__(
-                cls, *args, **kwargs)
-        return cls._instance
+        if not cls.__initialized:
+            cls.__init__(cls, *args, **kwargs)
+            cls.__initialized = True
+        return cls
 
 
 class TaskToSchedue(Task):

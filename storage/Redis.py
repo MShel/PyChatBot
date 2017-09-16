@@ -2,16 +2,15 @@ import redis
 
 
 class RedisAdapter:
-
     storage = None
 
-    host = '127.0.0.1'
+    host = None
 
-    port = 6379
+    port = None
 
-    def __init__(self):
+    def __init__(self, host, port):
         if not self.storage:
-            self.storage = redis.StrictRedis(host=self.host, port=self.port, db=0)
+            self.storage = redis.StrictRedis(host=host, port=int(port), db=0)
 
     def get_storage(self):
         return self.storage

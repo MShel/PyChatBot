@@ -17,7 +17,7 @@ class AbstractTransport:
     _instance = None
 
     # 100 chars as max size message
-    max_message_size = 100
+    max_message_size = 600
 
     @abstractmethod
     def get_help_message(self):
