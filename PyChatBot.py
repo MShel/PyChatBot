@@ -1,13 +1,15 @@
 import json
 from flask import Flask
-from storage import Redis
+from storage.Redis import RedisAdapter
+from storage.Scheduler import Scheduler
 from Router import Router
 from flask_restful import Api
 from collections import OrderedDict
 
 Config = json.load(open('config/config.json'), object_pairs_hook=OrderedDict)
 app = Flask(__name__, static_url_path=Config['static_path'])
-storage = Redis.RedisAdapter(Config['redis_host'],Config['redis_port']).get_storage()
+storage = RedisAdapter(Config['redis_host'],Config['redis_port']).get_storage()
+scheduler = Scheduler(Config['redis_host'], Config['redis_port'])
 router = Router(storage)
 
 api = Api(app)
