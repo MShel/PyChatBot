@@ -4,8 +4,8 @@ import unittest
 class FortunePluginTest(unittest.TestCase):
 
     def test_success(self):
-        recipe_plugin = Fortune()
-        response = recipe_plugin.get_response('test')
+        fortune_plugin = Fortune()
+        response = fortune_plugin.get_response('test')
         print(response)
 
 if __name__ == '__main__':

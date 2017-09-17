@@ -37,5 +37,10 @@ class RouterTest(unittest.TestCase):
         testRouter = Router.Router(storage)
         self.assertEqual(testRouter.get_plugin('InvalidPlugin', 1), (None,False))
 
+    def test_get_available_plugins(self):
+        storage = DummyStorage()
+        testRouter = Router.Router(storage)
+        print(testRouter.get_available_plugins())
+
 if __name__ == '__main__':
     unittest.main()
