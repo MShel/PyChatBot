@@ -28,7 +28,7 @@ class AbstractTransport:
         pass
 
     @abstractmethod
-    def send_message(self, message):
+    def send_message(self, sender_id, message):
         pass
 
     @abstractmethod

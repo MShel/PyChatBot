@@ -50,8 +50,8 @@ class FacebookEndPoint(Resource):
 
     methods = ['GET', 'POST']
 
-    def __init__(self, fb: Facebook, app: Flask):
-        self.fb = fb
+    def __init__(self, transport: Facebook, app: Flask):
+        self.fb = transport
         self.app = app
 
     def get(self):
@@ -60,7 +60,8 @@ class FacebookEndPoint(Resource):
         return self.verify()
 
     def post(self):
-        data = request.json()
+        data = request.get_json(force=True)
+        print(data)
         return self.webhook(data)
 
     def webhook(self, data) -> tuple:
@@ -73,7 +74,7 @@ class FacebookEndPoint(Resource):
                         for message in messageGenerator:
                             self.fb.send_message(sender_id, message)
 
-        return "ok", 200
+        return self.app.make_response("ok")
 
     def get_privacy(self):
         self.app.send_static_file('privacy.html')
@@ -82,6 +83,7 @@ class FacebookEndPoint(Resource):
         if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
             if not request.args.get("hub.verify_token") == self.fb.verify_token:
                 return "Verification token mismatch", 403
-            return request.args["hub.challenge"], 200
+
+            return self.app.make_response(request.args["hub.challenge"])
 
         return "We Got to FB transport!", 200

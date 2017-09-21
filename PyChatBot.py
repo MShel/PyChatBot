@@ -25,7 +25,7 @@ for transport_to_init in Config['transports']:
     for end_point in transport_instance.get_end_points_to_add():
         api.add_resource(api_class, transport_instance.access_point_root + end_point,
                          endpoint=transport_instance.access_point_root + end_point,
-                         resource_class_kwargs={'fb': transport_instance, 'app': app})
+                         resource_class_kwargs={'transport': transport_instance, 'app': app})
 
 if __name__ == '__main__':
     app.run(debug=True)

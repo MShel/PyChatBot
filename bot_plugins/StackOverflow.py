@@ -5,7 +5,7 @@ import bleach
 
 class StackOverflow(AbstractPlugin.AbstractPlugin):
 
-    SEARCH_API_URL = 'https://api.stackexchange.com/2.2/search/advanced?pagesize=1&order=desc&sort=votes&q={}&wiki=False&site=stackoverflow'
+    SEARCH_API_URL = 'https://api.stackexchange.com/2.2/search/advanced?pagesize=1&order=desc&sort=votes&in_title={}&wiki=False&site=stackoverflow'
 
     ANSWER_API_URL = 'https://api.stackexchange.com/2.2/answers/{}?order=desc&sort=votes&site=stackoverflow&filter=withbody'
 
