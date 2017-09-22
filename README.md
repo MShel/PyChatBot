@@ -7,9 +7,8 @@ m.me/smartpython
 
 * weather
 * recipe
-* exit 
-* reminder
 * joke
 * help
+* exit 
 
-exit is used to exit any plugin(since plugins are "sticky" - once you in it is assumes you use this plugin unless you mention another one or exit)
+Exit is used to exit any plugin(since plugins are "sticky" - once you in it is assumes you use this plugin unless you mention another one or exit)
