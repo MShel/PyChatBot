@@ -4,8 +4,10 @@ from bot_plugins import Weather
 from mock import Mock
 
 class DummyStorage:
+    to_return = None
+
     def get(self, *args):
-        pass
+        return self.to_return
     def set(self, *args):
         pass
     def setex(self, *args):
@@ -24,8 +26,7 @@ class RouterTest(unittest.TestCase):
 
     def test_success_initialised_plugin(self):
         storage = DummyStorage()
-        storage.get = Mock()
-        storage.get.return_value = 'weather'
+        storage.to_return = b'weather'
         testRouter = Router.Router(storage)
         weatherPlug = Weather.Weather()
         weatherPlug.storage = storage
