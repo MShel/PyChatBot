@@ -3,9 +3,9 @@ import urllib
 from bot_plugins import AbstractPlugin
 import bleach
 
-class StackOverflow(AbstractPlugin.AbstractPlugin):
 
-    SEARCH_API_URL = 'https://api.stackexchange.com/2.2/search/advanced?pagesize=1&order=desc&sort=votes&q={}&wiki=False&site=stackoverflow'
+class StackOverflow(AbstractPlugin.AbstractPlugin):
+    SEARCH_API_URL = 'https://api.stackexchange.com/2.2/search/advanced?pagesize=1&order=desc&sort=relevance&body={}&wiki=False&site=stackoverflow'
 
     ANSWER_API_URL = 'https://api.stackexchange.com/2.2/answers/{}?order=desc&sort=votes&site=stackoverflow&filter=withbody'
 
@@ -17,16 +17,17 @@ class StackOverflow(AbstractPlugin.AbstractPlugin):
 
     def get_response(self, message):
         if self.validate_message(message):
-            request_result =self.get_stack_overflow_answer(message)
+            request_result = self.get_stack_overflow_answer(message)
             result = self.format_output(request_result)
         else:
             result = self.get_help_message()
         return result
 
     def get_stack_overflow_answer(self, url):
-        search_api_response = requests.get(self.build_url(url, self.SEARCH_API_URL)).json()
-        answer =  ''
-        if search_api_response['items'] and search_api_response['items'][0]['is_answered']== True:
+        search_api_response = {'items': None}
+        search_api_response = {**search_api_response,**requests.get(self.build_url(url, self.SEARCH_API_URL)).json()}
+        answer = ''
+        if search_api_response['items'] and search_api_response['items'][0]['is_answered'] == True:
             answer += search_api_response['items'][0]['title'] + '\n'
             answer += self._get_an_answer(search_api_response['items'][0]['accepted_answer_id']) + '\n'
             answer += search_api_response['items'][0]['link']

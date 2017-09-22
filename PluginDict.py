@@ -5,17 +5,12 @@ from bot_plugins.Fortune import Fortune
 from bot_plugins.Exit import Exit
 from bot_plugins.StackOverflow import StackOverflow
 
-# all plugins are singletones so we dont need to worry about multiply intialisation
+# all plugins are singletones so we dont need to worry about multiply intialisation,
+# you can specify aliases here
 pluginDict = {
     'weather': Weather(),
-
     'recipe': Recipe(),
-
-    'reminder': Reminder(),
-
     'joke': Fortune(),
-
     'stackoverflow': StackOverflow(),
-
     'exit': Exit(),
 }

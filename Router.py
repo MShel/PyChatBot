@@ -16,12 +16,15 @@ class Router:
     def get_plugin(self, plugin_type, sender_id):
         initiated = False
         plugin = None
+        plugin_type = plugin_type
+        sender_id = sender_id
         try:
             plugin = PluginDict.pluginDict[plugin_type]
         except KeyError:
             plugin_type = self.storage.get(self.get_redis_key(sender_id))
             if plugin_type:
                 initiated = True
+                plugin_type = plugin_type.decode('utf-8')
                 plugin = PluginDict.pluginDict[plugin_type]
         if plugin:
             self.storage.setex(self.get_redis_key(sender_id), self.PLUGIN_EXPIRATION, plugin_type)
