@@ -34,6 +34,7 @@ class AbstractTransport:
     @abstractmethod
     def get_end_points_to_add(self):
         pass
+
     ##
     # returns generator over the message to reply paginated by self.max_message_size
     ##
@@ -43,11 +44,13 @@ class AbstractTransport:
 
         if plugin:
             plugin.transport = self
-
-            if not initiated:
-                reply = plugin.get_help_message()
-            else:
-                reply = plugin.get_response(message)
+            try:
+                if not initiated:
+                    reply = plugin.get_help_message()
+                else:
+                    reply = plugin.get_response(message)
+            except KeyError:
+                reply = 'Something went wrong... nothing can be done with your request, try something else.'
 
         def replySplitter(reply):
             returnYeild = ''
