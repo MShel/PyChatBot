@@ -65,15 +65,19 @@ class FacebookEndPoint(Resource):
         return self.webhook(data)
 
     def webhook(self, data) -> tuple:
+        sender_id = None
         if data["object"] == "page":
-            for entry in data["entry"]:
-                for messaging_event in entry["messaging"]:
-                    if messaging_event.get("message"):
-                        sender_id = messaging_event["sender"]["id"]
-                        messageGenerator = self.fb.get_reply_message(sender_id, messaging_event["message"]["text"].lower())
-                        for message in messageGenerator:
-                            self.fb.send_message(sender_id, message)
-
+            try:
+                for entry in data["entry"]:
+                    for messaging_event in entry["messaging"]:
+                        if messaging_event.get("message"):
+                            sender_id = messaging_event["sender"]["id"]
+                            messageGenerator = self.fb.get_reply_message(sender_id, messaging_event["message"]["text"].lower())
+                            for message in messageGenerator:
+                                self.fb.send_message(sender_id, message)
+            except KeyError:
+                if sender_id:
+                    self.fb.send_message(sender_id, "This facebook action is not supported yet")
         return self.app.make_response("ok")
 
     def get_privacy(self):
