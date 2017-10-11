@@ -4,10 +4,10 @@ from bot_plugins import AbstractPlugin
 
 
 class DogPlugin(AbstractPlugin.AbstractPlugin):
-    API_URL = 'https://dog.ceo/api/breed/{}/list'
+    API_URL = 'https://dog.ceo/api/breed/{}/images/random'
 
     def get_help_message(self):
-        return 'Type the name of a dog breed to get a list of sub-breeds.'
+        return 'Type the name of a dog breed to get a random image of a dog you want to see.'
 
     def get_response(self, message):
         if self.validate_message(message):
@@ -33,17 +33,16 @@ class DogPlugin(AbstractPlugin.AbstractPlugin):
                 if resp_data.get('code', '') == '404':
                     print('Dog breed not found: %s' % request_result.request.url)
                 else:
-                    print('Error getting dog breed: %s' % request_result.request.url)
+                    print('Error getting random dog image: %s' % request_result.request.url)
                     print('Error code: %s' % resp_data.get('code', 'None'))
                     print('Error message: %s' % resp_data.get('message', 'None'))
                 raise ValueError('Not found')
             
             # Get the list of sub-breeds
-            sub_breeds = resp_data.get('message', [])
-            if not len(sub_breeds):
+            random_image_url = resp_data.get('message')
+            if not random_image_url:
                 raise ValueError('Not found')
-            formatted_output += 'I found %s sub-breeds:\n' % len(sub_breeds)
-            formatted_output += '\n'.join(sub_breeds)
+            formatted_output += random_image_url
         except ValueError:
             formatted_output += 'Nothing found for that dog breed :( Please try something else'
         return formatted_output
