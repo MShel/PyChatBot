@@ -6,15 +6,16 @@ m.me/smartpython
 ## Commands available(22/09/2017):
 
 * weather
+* dog
+* exit
 * recipe
 * joke
-* help
-* exit 
+* stackoverflow
 
 Exit is used to exit any plugin(since plugins are "sticky" - once you in it is assumes you use this plugin unless you mention another one or exit)
 
 ## Docummentation:
-You can get it here: https://github.com/MShel/PyChatBot/wiki. Iy is work in progress 
+You can get it here: https://github.com/MShel/PyChatBot/wiki. It is work in progress 
 
 ## Transports available:
 * Facebook
