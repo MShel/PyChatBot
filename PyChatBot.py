@@ -1,23 +1,22 @@
-import json
 from flask import Flask
 from storage.Redis import RedisAdapter
 from storage.Scheduler import Scheduler
 from Router import Router
 from flask_restful import Api
-from collections import OrderedDict
+from config.Config import Config
 
-Config = json.load(open('config/config.json'), object_pairs_hook=OrderedDict)
-app = Flask(__name__, static_url_path=Config['static_path'])
-storage = RedisAdapter(Config['redis_host'],Config['redis_port']).get_storage()
-scheduler = Scheduler(Config['redis_host'], Config['redis_port'])
+config = Config()
+app = Flask(__name__, static_url_path=config.get_static_path())
+storage = RedisAdapter(**config.get_redis_conf()).get_storage()
 router = Router(storage)
 
 api = Api(app)
-#TODO we need to add some comments about this magic
-for transport_to_init in Config['transports']:
+transports = config.get_transports()
+
+for transport_to_init in transports:
     module = __import__('transport.' + transport_to_init)
     transport_class = getattr(getattr(module, transport_to_init), transport_to_init)
-    transport_instance = transport_class(router, **Config['transports'][transport_to_init])
+    transport_instance = transport_class(router, **transports[transport_to_init])
     module = __import__('transport.' + transport_to_init)
     end_point_name = transport_to_init + 'EndPoint'
     api_class = getattr(getattr(module, transport_to_init), end_point_name)
