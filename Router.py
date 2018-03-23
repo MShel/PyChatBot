@@ -24,7 +24,7 @@ class Router:
                 initiated = True
                 plugin_type = plugin_type.decode('utf-8')
                 plugin = PluginDict.pluginDict[plugin_type]
-                if transport_name not in plugin.get_supported_transports():
+                if transport_name.title() not in plugin.get_supported_transports():
                     raise ValueError("This plugin is not supported for " + transport_name)
         if plugin:
             self.storage.setex(self.get_redis_key(sender_id), self.PLUGIN_EXPIRATION, plugin_type)
