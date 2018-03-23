@@ -1,7 +1,6 @@
 import unittest
 import Router
 from bot_plugins import Weather
-from mock import Mock
 
 class DummyStorage:
     to_return = None

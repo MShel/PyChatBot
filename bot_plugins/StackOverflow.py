@@ -53,3 +53,7 @@ class StackOverflow(AbstractPlugin.AbstractPlugin):
 
     def validate_message(self, message):
         return True
+
+
+    def get_supported_transports(self):
+        return []

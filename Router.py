@@ -2,10 +2,8 @@ import PluginDict
 
 
 class Router:
-    # key to store which plugin user is using
     REDIS_KEY_ACTIVE_PLUGIN = 'pychatbot:active_plugin:%s'
 
-    # how long do we have plugin activated thats ms
     PLUGIN_EXPIRATION = 60000
 
     storage = None
@@ -13,7 +11,7 @@ class Router:
     def __init__(self, storage):
         self.storage = storage
 
-    def get_plugin(self, plugin_type, sender_id):
+    def get_plugin(self, plugin_type, sender_id, transport_name):
         initiated = False
         plugin = None
         plugin_type = plugin_type
@@ -26,12 +24,15 @@ class Router:
                 initiated = True
                 plugin_type = plugin_type.decode('utf-8')
                 plugin = PluginDict.pluginDict[plugin_type]
+                if transport_name not in plugin.get_supported_transports():
+                    raise ValueError("This plugin is not supported for " + transport_name)
         if plugin:
             self.storage.setex(self.get_redis_key(sender_id), self.PLUGIN_EXPIRATION, plugin_type)
             plugin.storage = self.storage
             plugin.sender_id = sender_id
 
         return plugin, initiated
+
 
     @staticmethod
     def get_redis_key(sender_id):

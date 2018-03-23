@@ -1,12 +1,9 @@
-import requests
-import urllib
 from bot_plugins import AbstractPlugin
 import subprocess
 
 
 class Fortune(AbstractPlugin.AbstractPlugin):
 
-    #command to run to get fortune
     FORTUNE_COMMAND = 'fortune -a'
 
     def get_help_message(self):

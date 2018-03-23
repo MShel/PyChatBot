@@ -14,8 +14,6 @@ class AbstractTransport:
 
     router = None
 
-    _instance = None
-
     # 100 chars as max size message
     max_message_size = 600
 
@@ -38,19 +36,20 @@ class AbstractTransport:
     ##
     # returns generator over the message to reply paginated by self.max_message_size
     ##
-    def get_reply_message(self, sender_id: str, message: str) -> Generator[str, None, None]:
+    def get_reply_message(self, sender_id: str, message: str) -> Generator[str]:
         reply = 'Try one of those:\n ' + '\n'.join(self.router.get_available_plugins())
-        plugin, initiated = self.router.get_plugin(message, sender_id)
-
-        if plugin:
-            plugin.transport = self
-            try:
+        try:
+            plugin, initiated = self.router.get_plugin(message, sender_id, self.__class__.__name__)
+            if plugin:
+                plugin.transport = self
                 if not initiated:
                     reply = plugin.get_help_message()
                 else:
                     reply = plugin.get_response(message)
-            except KeyError:
-                reply = 'Something went wrong... nothing can be done with your request, try something else.'
+        except KeyError:
+            reply = 'Something went wrong... nothing can be done with your request, Try something else.'
+        except ValueError:
+            reply = 'This plugion is available on this plaltform'
 
         def replySplitter(reply):
             returnYeild = ''

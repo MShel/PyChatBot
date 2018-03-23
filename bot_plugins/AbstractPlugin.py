@@ -1,9 +1,12 @@
 from abc import ABCMeta, abstractmethod
+from config.Config import Config
 
 '''
 all plugins should extend this class
 and implement missing methods
 '''
+
+
 class AbstractPlugin:
     __metaclass__ = ABCMeta
 
@@ -12,8 +15,6 @@ class AbstractPlugin:
     storage = None
 
     sender_id = None
-
-    transport = None
 
     @abstractmethod
     def get_help_message(self): pass
@@ -27,7 +28,10 @@ class AbstractPlugin:
     @abstractmethod
     def validate_message(self, message): pass
 
-    #singleton
+    def get_supported_transports(self) -> set:
+        return set(Config().get_transports().keys())
+    #
+    # singleton
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
             cls._instance = super().__new__(

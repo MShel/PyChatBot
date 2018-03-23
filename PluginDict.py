@@ -15,5 +15,5 @@ pluginDict = {
     'dog': DogPlugin(),
     'stackoverflow': StackOverflow(),
     'exit': Exit(),
-    'apicaller': ApiCaller
+    # 'apicaller': ApiCaller()
 }
