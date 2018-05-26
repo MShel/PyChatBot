@@ -23,24 +23,17 @@ class Weather(AbstractPlugin.AbstractPlugin):
         formatted_output = ''
         try:
             json_res = request_result.json()['query']['results']['channel']['item']['forecast']
-            i = 0
+            when = when.strip()
             template = 'description: {text} \n' \
                        'high temp: {high} \n' \
                        'low temp: {low} \n'
 
             for forecast_item in json_res:
-                if when.strip() == 'now' and i == 0:
-                    formatted_output = template.format(**forecast_item)
-                    break
-                elif when.strip() == 'tomorrow' and i == 1:
-                    formatted_output = template.format(**forecast_item)
-                    break
-                elif when.strip() == 'day after tomorrow' and i == 2:
+                if when in ['now', 'tomorrow', 'day after tomorrow']:
                     formatted_output = template.format(**forecast_item)
                     break
                 else:
                     formatted_output = self.get_help_message()
-                i += 1
         except Exception:
             formatted_output = 'No weather found for your location'
         return formatted_output
