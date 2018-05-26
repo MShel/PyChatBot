@@ -6,7 +6,7 @@ class DogPluginTest(unittest.TestCase):
     def test_success(self):
         dog_plugin = DogPlugin()
         response = dog_plugin.get_response('beagle')
-        self.assertEqual(True, 'api/img' in response)
+        self.assertEqual(True, 'breeds/beagle' in response)
 
     def test_failure(self):
         dog_plugin = DogPlugin()
