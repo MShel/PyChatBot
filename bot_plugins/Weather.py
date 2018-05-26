@@ -29,13 +29,7 @@ class Weather(AbstractPlugin.AbstractPlugin):
                        'low temp: {low} \n'
 
             for forecast_item in json_res:
-                if when.strip() == 'now' and i == 0:
-                    formatted_output = template.format(**forecast_item)
-                    break
-                elif when.strip() == 'tomorrow' and i == 1:
-                    formatted_output = template.format(**forecast_item)
-                    break
-                elif when.strip() == 'day after tomorrow' and i == 2:
+                if when.strip() in ['now', 'tomorrow', 'day after tomorrow'] and i == 0:
                     formatted_output = template.format(**forecast_item)
                     break
                 else:

@@ -14,8 +14,6 @@ class Router:
     def get_plugin(self, plugin_type, sender_id, transport_name):
         initiated = False
         plugin = None
-        plugin_type = plugin_type
-        sender_id = sender_id
         try:
             plugin = PluginDict.pluginDict[plugin_type]
         except KeyError:
