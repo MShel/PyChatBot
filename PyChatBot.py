@@ -27,4 +27,4 @@ for transport_to_init in transports:
                          resource_class_kwargs={'transport': transport_instance, 'app': app})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
