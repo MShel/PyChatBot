@@ -49,7 +49,10 @@ class AbstractTransport:
         except KeyError:
             reply = 'Something went wrong... nothing can be done with your request, Try something else.'
         except ValueError:
-            reply = 'This plugion is available on this plaltform'
+            reply = 'This plugin is not available on this platform'
+        except:
+            reply = 'This plugin do not want to play nice. Try something else'
+
 
         def replySplitter(reply):
             returnYeild = ''
