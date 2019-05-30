@@ -25,7 +25,8 @@ class Router:
                 if transport_name.title() not in plugin.get_supported_transports():
                     raise ValueError("This plugin is not supported for " + transport_name)
         if plugin:
-            self.storage.setex(self.get_redis_key(sender_id), self.PLUGIN_EXPIRATION, plugin_type)
+            # got plugin
+	    self.storage.setex(self.get_redis_key(sender_id), self.PLUGIN_EXPIRATION, plugin_type)
             plugin.storage = self.storage
             plugin.sender_id = sender_id
 
