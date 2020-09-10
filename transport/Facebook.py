@@ -5,6 +5,7 @@ from Router import Router
 import json
 from flask_restful import Resource
 
+
 class Facebook(AbstractTransport):
     verify_token = None
 
@@ -42,8 +43,8 @@ class Facebook(AbstractTransport):
         })
         requests.post(self.MESSAGES_URL, params=params, headers=headers, data=data)
 
-class FacebookEndPoint(Resource):
 
+class FacebookEndPoint(Resource):
     fb = None
 
     app = None
@@ -72,7 +73,8 @@ class FacebookEndPoint(Resource):
                     for messaging_event in entry["messaging"]:
                         if messaging_event.get("message"):
                             sender_id = messaging_event["sender"]["id"]
-                            messageGenerator = self.fb.get_reply_message(sender_id, messaging_event["message"]["text"].lower())
+                            messageGenerator = self.fb.get_reply_message(sender_id,
+                                                                         messaging_event["message"]["text"].lower())
                             for message in messageGenerator:
                                 self.fb.send_message(sender_id, message)
             except KeyError:

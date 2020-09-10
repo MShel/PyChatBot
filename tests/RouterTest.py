@@ -2,13 +2,16 @@ import unittest
 import Router
 from bot_plugins import Weather
 
+
 class DummyStorage:
     to_return = None
 
     def get(self, *args):
         return self.to_return
+
     def set(self, *args):
         pass
+
     def setex(self, *args):
         pass
 
@@ -17,30 +20,31 @@ class RouterTest(unittest.TestCase):
 
     def test_success(self):
         storage = DummyStorage()
-        testRouter = Router.Router(storage)
-        weatherPlug = Weather.Weather()
-        weatherPlug.storage = storage
-        weatherPlug.sender_id = 1
-        self.assertEqual(testRouter.get_plugin('weather', 1, 'facebook'), (weatherPlug,False))
+        test_router = Router.Router(storage)
+        weather_plug = Weather.Weather()
+        weather_plug.storage = storage
+        weather_plug.sender_id = 1
+        self.assertEqual(test_router.get_plugin('weather', 1, 'facebook'), (weather_plug, False))
 
     def test_success_initialised_plugin(self):
         storage = DummyStorage()
         storage.to_return = b'weather'
-        testRouter = Router.Router(storage)
-        weatherPlug = Weather.Weather()
-        weatherPlug.storage = storage
-        weatherPlug.sender_id = 1
-        self.assertEqual(testRouter.get_plugin('trash', 1, 'facebook'), (weatherPlug, True))
+        test_router = Router.Router(storage)
+        weather_plug = Weather.Weather()
+        weather_plug.storage = storage
+        weather_plug.sender_id = 1
+        self.assertEqual(test_router.get_plugin('trash', 1, 'facebook'), (weather_plug, True))
 
     def test_invalid_plugin(self):
         storage = DummyStorage()
-        testRouter = Router.Router(storage)
-        self.assertEqual(testRouter.get_plugin('InvalidPlugin', 1, 'facebook'), (None,False))
+        test_router = Router.Router(storage)
+        self.assertEqual(test_router.get_plugin('InvalidPlugin', 1, 'facebook'), (None, False))
 
     def test_get_available_plugins(self):
         storage = DummyStorage()
-        testRouter = Router.Router(storage)
-        print(testRouter.get_available_plugins())
+        test_router = Router.Router(storage)
+        print(test_router.get_available_plugins())
+
 
 if __name__ == '__main__':
     unittest.main()

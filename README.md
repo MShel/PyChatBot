@@ -3,8 +3,12 @@ https://trello.com/b/1v4eE530/pychatbot
 
 you can play with a bot here:
 m.me/smartpython
-## Commands available(22/09/2017):
 
+## Requirements
+* Redis to store plugin's sessions
+* see requirements.txt for more details
+
+## Commands available(22/09/2017):
 * weather
 * dog
 * exit
