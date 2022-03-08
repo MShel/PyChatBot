@@ -13,7 +13,8 @@ class Config:
 
     def load_configs(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        config = json.load(open(dir_path+'/config.json'), object_pairs_hook=OrderedDict)
+        with open(dir_path+'/config.json') as conf_file:
+            config = json.load(conf_file, object_pairs_hook = OrderedDict)
         return config
 
     def get_transports(self):
