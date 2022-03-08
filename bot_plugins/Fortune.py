@@ -4,7 +4,7 @@ import subprocess
 
 class Fortune(AbstractPlugin.AbstractPlugin):
 
-    FORTUNE_COMMAND = 'fortune -a'
+    FORTUNE_COMMAND = '/usr/bin/fortune -a'
 
     def get_help_message(self):
         return self.get_response(None)

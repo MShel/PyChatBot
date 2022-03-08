@@ -5,10 +5,9 @@ import unittest
 class WeatherPluginTest(unittest.TestCase):
 
     def test_success(self):
-        pass
         weather_plugin = Weather()
-        # response = weather_plugin.get_response('Cambridge MA | now')
-        # self.assertEqual(True, 'high temp' in response)
+        response = weather_plugin.get_response('Cambridge MA | now')
+        self.assertEqual(True, 'high temp' in response)
         # self.assertEqual(True, 'low temp' in response)
         # self.assertEqual(True, 'description' in response)
 
