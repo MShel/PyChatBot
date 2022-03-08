@@ -2,8 +2,7 @@ language: python
 python:
   - "3.7"
 before_install:
-  - sudo apt-get install cowsay
-  - sudo apt-get install fortune-mod
+  - sudo apt-get install fortunes fortune-mod cowsay
 # command to install dependencies
 # nothing needed so far
 install: "pip install -r requirements.txt"
