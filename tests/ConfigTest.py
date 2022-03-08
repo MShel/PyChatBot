@@ -3,7 +3,7 @@ from config.Config import Config
 
 
 class ConfigTest(unittest.TestCase):
-    current_transports = ['Slack', 'Facebook']
+    current_transports = ['Slack', 'Facebook', "Telegram"]
 
     def test_singleton(self):
         self.config = Config()

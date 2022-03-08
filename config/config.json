@@ -13,6 +13,10 @@
       "token": "***",
       "bot_id": "***",
       "access_point_root": "/slack"
+    },
+    "Telegram": {
+      "token": "****",
+      "access_point_root": "/telegram"
     }
   }
 }
